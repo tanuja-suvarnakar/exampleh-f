@@ -1,0 +1,670 @@
+<!-- src/app/pages/landing/landing.component.html -->
+<div class="landing-container">
+  
+  <!-- Navigation -->
+  <header class="navbar" [class.scrolled]="isScrolled">
+    <div class="navbar-content">
+      <div class="navbar-brand" routerLink="/">
+        <div class="logo">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="url(#nav-logo-gradient)"/>
+            <path d="M12 20h16M20 12v16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="6" stroke="white" stroke-width="2" fill="none"/>
+            <defs>
+              <linearGradient id="nav-logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                <stop stop-color="#14B8A6"/>
+                <stop offset="1" stop-color="#0EA5E9"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="brand-name">ExamplehConnect</span>
+      </div>
+      
+      <nav class="navbar-nav" [class.open]="mobileMenuOpen">
+        <a class="nav-link" (click)="scrollToSection('features')">Features</a>
+        <a class="nav-link" (click)="scrollToSection('how-it-works')">How It Works</a>
+        <a class="nav-link" (click)="scrollToSection('testimonials')">Testimonials</a>
+        <a class="nav-link" (click)="scrollToSection('pricing')">Pricing</a>
+      </nav>
+      
+      <div class="navbar-actions">
+        <button class="btn btn-ghost" routerLink="/login">Sign In</button>
+        <button class="btn btn-primary" routerLink="/login">Get Started</button>
+      </div>
+      
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <svg *ngIf="!mobileMenuOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+        <svg *ngIf="mobileMenuOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+      </div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Trusted by 500+ Healthcare Facilities</span>
+        </div>
+        
+        <h1 class="hero-title">
+          Modern Healthcare
+          <span class="gradient-text">Management</span>
+          Made Simple
+        </h1>
+        
+        <p class="hero-subtitle">
+          ExamplehConnect streamlines examplep care with powerful tools for scheduling, 
+          examplepres management, and team collaboration. Focus on what matters most — your exampleps.
+        </p>
+        
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" routerLink="/login">
+            <span>Start Free Trial</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <button class="btn btn-outline btn-lg" (click)="scrollToSection('features')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+            </svg>
+            <span>Watch Demo</span>
+          </button>
+        </div>
+        
+        <div class="hero-trust">
+          <span class="trust-label">Trusted by teams at</span>
+          <div class="trust-logos">
+            <div class="trust-logo">MedCenter</div>
+            <div class="trust-logo">HealthPlus</div>
+            <div class="trust-logo">CareFirst</div>
+            <div class="trust-logo">WellCare</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="dashboard-preview">
+          <div class="preview-header">
+            <div class="preview-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="preview-title">ExamplehConnect Dashboard</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-sidebar">
+              <div class="sidebar-item active"></div>
+              <div class="sidebar-item"></div>
+              <div class="sidebar-item"></div>
+              <div class="sidebar-item"></div>
+            </div>
+            <div class="preview-main">
+              <div class="preview-stats">
+                <div class="mini-stat">
+                  <div class="stat-icon emerald">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-value">2,847</span>
+                    <span class="stat-label">Exampleps</span>
+                  </div>
+                </div>
+                <div class="mini-stat">
+                  <div class="stat-icon indigo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-value">156</span>
+                    <span class="stat-label">Today</span>
+                  </div>
+                </div>
+                <div class="mini-stat">
+                  <div class="stat-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <path d="M14 2v6h6"/>
+                    </svg>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-value">89</span>
+                    <span class="stat-label">Examplepres</span>
+                  </div>
+                </div>
+              </div>
+              <div class="preview-chart">
+                <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.3"/>
+                      <stop offset="100%" stop-color="#14B8A6" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,50 Q25,45 50,35 T100,25 T150,15 T200,20" fill="none" stroke="#14B8A6" stroke-width="2"/>
+                  <path d="M0,50 Q25,45 50,35 T100,25 T150,15 T200,20 L200,60 L0,60 Z" fill="url(#chart-gradient)"/>
+                </svg>
+              </div>
+              <div class="preview-table">
+                <div class="table-row"></div>
+                <div class="table-row"></div>
+                <div class="table-row"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Floating Cards -->
+        <div class="floating-card card-1">
+          <div class="card-icon success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-title">Visit Completed</span>
+            <span class="card-desc">Dr. Smith • 2 min ago</span>
+          </div>
+        </div>
+        
+        <div class="floating-card card-2">
+          <div class="card-icon info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <path d="M14 2v6h6M12 18v-6M9 15h6"/>
+            </svg>
+          </div>
+          <div class="card-text">
+            <span class="card-title">New Examplepres</span>
+            <span class="card-desc">John Doe • Just now</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="scroll-indicator" (click)="scrollToSection('features')">
+      <span>Scroll to explore</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="stats-container">
+      <div class="stat-item" *ngFor="let stat of stats">
+        <div class="stat-icon-wrapper">
+          <svg *ngIf="stat.icon === 'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+          <svg *ngIf="stat.icon === 'calendar'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <svg *ngIf="stat.icon === 'document'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          <svg *ngIf="stat.icon === 'check'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Features</span>
+        <h2 class="section-title">Everything you need to run your practice</h2>
+        <p class="section-subtitle">
+          Powerful features designed specifically for healthcare professionals to streamline 
+          operations and improve examplep care.
+        </p>
+      </div>
+      
+      <div class="features-grid">
+        <div 
+          *ngFor="let feature of features; let i = index" 
+          class="feature-card"
+          [class.active]="activeFeature === i"
+          (mouseenter)="setActiveFeature(i)"
+        >
+          <div class="feature-icon" [ngClass]="'icon--' + feature.color">
+            <svg *ngIf="feature.icon === 'patients'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+            </svg>
+            <svg *ngIf="feature.icon === 'calendar'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+              <circle cx="12" cy="15" r="2"/>
+            </svg>
+            <svg *ngIf="feature.icon === 'prescription'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+              <path d="M9 3v4a2 2 0 002 2h4"/>
+              <path d="M14 11l-5 5M14 16l-5-5"/>
+            </svg>
+            <svg *ngIf="feature.icon === 'analytics'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 3v18h18"/>
+              <path d="M7 16l4-4 4 4 6-6"/>
+            </svg>
+            <svg *ngIf="feature.icon === 'security'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <svg *ngIf="feature.icon === 'team'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="9" cy="7" r="3"/>
+              <circle cx="17" cy="7" r="3"/>
+              <path d="M3 18c0-3 3-5 6-5s6 2 6 5"/>
+              <path d="M15 13c3 0 6 2 6 5"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+          <a class="feature-link">
+            Learn more
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">How It Works</span>
+        <h2 class="section-title">Get started in minutes</h2>
+        <p class="section-subtitle">
+          Simple setup process to get your practice running on ExamplehConnect.
+        </p>
+      </div>
+      
+      <div class="steps-container">
+        <div class="step-item">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <path d="M20 8v6M23 11h-6"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Create Your Account</h3>
+            <p class="step-description">
+              Sign up with your email and set up your organization profile in under 2 minutes.
+            </p>
+          </div>
+        </div>
+        
+        <div class="step-connector">
+          <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+            <path d="M0,10 L100,10" stroke="currentColor" stroke-width="2" stroke-dasharray="6,4"/>
+          </svg>
+        </div>
+        
+        <div class="step-item">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Add Your Team</h3>
+            <p class="step-description">
+              Invite exampleds, assistants, and administrators with role-based permissions.
+            </p>
+          </div>
+        </div>
+        
+        <div class="step-connector">
+          <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+            <path d="M0,10 L100,10" stroke="currentColor" stroke-width="2" stroke-dasharray="6,4"/>
+          </svg>
+        </div>
+        
+        <div class="step-item">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Start Managing</h3>
+            <p class="step-description">
+              Begin adding exampleps, scheduling visits, and issuing examplepres right away.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Testimonials</span>
+        <h2 class="section-title">Loved by healthcare professionals</h2>
+        <p class="section-subtitle">
+          See what medical practitioners are saying about ExamplehConnect.
+        </p>
+      </div>
+      
+      <div class="testimonials-grid">
+        <div *ngFor="let testimonial of testimonials" class="testimonial-card">
+          <div class="testimonial-quote">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+            </svg>
+          </div>
+          <p class="testimonial-text">{{ testimonial.quote }}</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">{{ testimonial.avatar }}</div>
+            <div class="author-info">
+              <span class="author-name">{{ testimonial.author }}</span>
+              <span class="author-role">{{ testimonial.role }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Pricing</span>
+        <h2 class="section-title">Simple, transparent pricing</h2>
+        <p class="section-subtitle">
+          Choose the plan that best fits your practice size and needs.
+        </p>
+      </div>
+      
+      <div class="pricing-grid">
+        <!-- Starter Plan -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3 class="plan-name">Starter</h3>
+            <p class="plan-description">Perfect for small practices</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount">29</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Up to 500 exampleps
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              3 team members
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Basic analytics
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Email support
+            </li>
+          </ul>
+          <button class="btn btn-outline btn-block">Get Started</button>
+        </div>
+        
+        <!-- Professional Plan -->
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <div class="pricing-header">
+            <h3 class="plan-name">Professional</h3>
+            <p class="plan-description">For growing practices</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount">79</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Unlimited exampleps
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              10 team members
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Advanced analytics
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Priority support
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              API access
+            </li>
+          </ul>
+          <button class="btn btn-primary btn-block">Get Started</button>
+        </div>
+        
+        <!-- Enterprise Plan -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3 class="plan-name">Enterprise</h3>
+            <p class="plan-description">For large organizations</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-amount">Custom</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Everything in Professional
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Unlimited team members
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Custom integrations
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Dedicated support
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              SLA guarantee
+            </li>
+          </ul>
+          <button class="btn btn-outline btn-block">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to transform your practice?</h2>
+        <p class="cta-subtitle">
+          Join thousands of healthcare professionals who trust ExamplehConnect.
+        </p>
+        <div class="cta-actions">
+          <button class="btn btn-white btn-lg" routerLink="/login">
+            Start Free Trial
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <button class="btn btn-ghost-white btn-lg">
+            Schedule Demo
+          </button>
+        </div>
+        <p class="cta-note">No credit card required • 14-day free trial</p>
+      </div>
+      <div class="cta-decoration">
+        <div class="deco-circle"></div>
+        <div class="deco-circle"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="12" fill="url(#footer-logo-gradient)"/>
+              <path d="M12 20h16M20 12v16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="20" cy="20" r="6" stroke="white" stroke-width="2" fill="none"/>
+              <defs>
+                <linearGradient id="footer-logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                  <stop stop-color="#14B8A6"/>
+                  <stop offset="1" stop-color="#0EA5E9"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>ExamplehConnect</span>
+          </div>
+          <p class="footer-tagline">
+            Modern healthcare management for modern practices. 
+            Streamline operations and focus on what matters most.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-link">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">Integrations</a>
+            <a href="#">Changelog</a>
+          </div>
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Blog</a>
+            <a href="#">Careers</a>
+            <a href="#">Contact</a>
+          </div>
+          <div class="footer-column">
+            <h4>Resources</h4>
+            <a href="#">Documentation</a>
+            <a href="#">Help Center</a>
+            <a href="#">API Reference</a>
+            <a href="#">Status</a>
+          </div>
+          <div class="footer-column">
+            <h4>Legal</h4>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Security</a>
+            <a href="#">HIPAA</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© {{ currentYear }} ExamplehConnect. All rights reserved.</p>
+        <p>Built with ❤️ for healthcare professionals</p>
+      </div>
+    </div>
+  </footer>
+</div>

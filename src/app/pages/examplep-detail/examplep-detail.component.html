@@ -1,0 +1,458 @@
+<!-- src/app/pages/examplep-detail/examplep-detail.component.html -->
+<div class="examplep-detail-container">
+  
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+    </div>
+    <div class="error-content">
+      <h3>Failed to load examplep</h3>
+      <p>{{ error }}</p>
+    </div>
+    <button class="btn btn-secondary" (click)="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Go Back
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !error" class="loading-state">
+    <div class="loading-profile">
+      <div class="skeleton skeleton-avatar-lg"></div>
+      <div class="skeleton-content">
+        <div class="skeleton skeleton-title-lg"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+      </div>
+    </div>
+    <div class="loading-cards">
+      <div class="skeleton skeleton-card" *ngFor="let i of [1,2,3]"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error && examplep" class="detail-content">
+    
+    <!-- Back Button & Actions -->
+    <div class="top-bar">
+      <button class="back-btn" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back to Exampleps</span>
+      </button>
+      
+      <div class="top-actions">
+        <button class="btn btn-secondary" (click)="editExamplep()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <span>Edit Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Header -->
+    <section class="profile-header">
+      <div class="profile-card">
+        <div class="profile-main">
+          <div class="profile-avatar">
+            {{ getInitials() }}
+          </div>
+          <div class="profile-info">
+            <h1 class="profile-name">{{ examplep.firstName }} {{ examplep.lastName }}</h1>
+            <div class="profile-meta">
+              <span class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                {{ examplep.dateOfBirth | date:'mediumDate' }}
+              </span>
+              <span class="meta-divider">•</span>
+              <span class="meta-item">{{ getAge() }} years old</span>
+              <span class="meta-divider">•</span>
+              <span class="meta-item id-badge">ID: #{{ examplep.id }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.totalPrescriptions }}</span>
+            <span class="stat-label">Total Examplepres</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">{{ stats.thisMonth }}</span>
+            <span class="stat-label">This Month</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">{{ getTimeAgo(stats.lastVisit) }}</span>
+            <span class="stat-label">Last Visit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      
+      <!-- Left Column - Contact Details -->
+      <aside class="sidebar">
+        <div class="info-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+              </svg>
+              Contact Information
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Phone</span>
+                  <span class="info-value">{{ examplep.phone || 'Not provided' }}</span>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Email</span>
+                  <span class="info-value" [class.empty]="!examplep.email">
+                    {{ examplep.email || 'Not provided' }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Address</span>
+                  <span class="info-value" [class.empty]="!examplep.address">
+                    {{ examplep.address || 'Not provided' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="info-card actions-card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/>
+              </svg>
+              Quick Actions
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="quick-actions">
+              <button class="quick-action-btn" *ngIf="canAddPrescription" (click)="toggleAddForm()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <path d="M14 2v6h6M12 18v-6M9 15h6"/>
+                </svg>
+                <span>New Examplepres</span>
+              </button>
+              <button class="quick-action-btn" routerLink="/app/visits/new" [queryParams]="{examplepId: examplep.id}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01"/>
+                </svg>
+                <span>Schedule Visit</span>
+              </button>
+              <button class="quick-action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+                <span>View History</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column - Prescriptions -->
+      <main class="main-content">
+        <div class="prescriptions-card">
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="header-left">
+              <h3 class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+                  <path d="M9 3v4a2 2 0 002 2h4"/>
+                  <path d="M14 11l-5 5M14 16l-5-5"/>
+                </svg>
+                Examplepres History
+              </h3>
+              <p class="card-subtitle">Browse and download examplepres by month</p>
+            </div>
+            
+            <!-- Month Navigation -->
+            <div class="month-nav">
+              <button class="month-btn" (click)="changeMonth(-1)" title="Previous month">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <button class="month-label" (click)="goToCurrentMonth()" title="Go to current month">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                <span>{{ currentMonthLabel }}</span>
+              </button>
+              <button class="month-btn" (click)="changeMonth(1)" title="Next month">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add Prescription Form -->
+          <div *ngIf="showAddForm && canAddPrescription" class="add-form-container">
+            <div class="add-form">
+              <div class="form-header">
+                <h4>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  New Examplepres
+                </h4>
+                <button class="close-btn" (click)="toggleAddForm()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Success Message -->
+              <div *ngIf="createSuccess" class="success-message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Examplepres created successfully!</span>
+              </div>
+
+              <!-- Error Message -->
+              <div *ngIf="createError" class="error-message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <span>{{ createError }}</span>
+              </div>
+
+              <div class="form-body" *ngIf="!createSuccess">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="medication">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                      </svg>
+                      Medication
+                    </label>
+                    <input 
+                      type="text" 
+                      id="medication"
+                      [(ngModel)]="newMedication" 
+                      placeholder="e.g., Amoxicillin 500mg"
+                      [disabled]="creatingPrescription"
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="dosage">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M2 12h20"/>
+                      </svg>
+                      Dosage
+                    </label>
+                    <input 
+                      type="text" 
+                      id="dosage"
+                      [(ngModel)]="newDosage" 
+                      placeholder="e.g., 1 tablet twice daily"
+                      [disabled]="creatingPrescription"
+                    />
+                  </div>
+                  
+                  <div class="form-group full-width">
+                    <label for="instructions">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                      </svg>
+                      Instructions
+                    </label>
+                    <textarea 
+                      id="instructions"
+                      [(ngModel)]="newInstructions" 
+                      placeholder="e.g., Take after meals with water. Complete the full course even if symptoms improve."
+                      rows="3"
+                      [disabled]="creatingPrescription"
+                    ></textarea>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <button class="btn btn-secondary" (click)="toggleAddForm()" [disabled]="creatingPrescription">
+                    Cancel
+                  </button>
+                  <button class="btn btn-primary" (click)="createPrescription()" [disabled]="creatingPrescription">
+                    <svg *ngIf="creatingPrescription" class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                    </svg>
+                    <svg *ngIf="!creatingPrescription" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                      <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    <span>{{ creatingPrescription ? 'Saving...' : 'Save Examplepres' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Button (when form is hidden) -->
+          <div *ngIf="!showAddForm && canAddPrescription" class="add-btn-container">
+            <button class="add-prescription-btn" (click)="toggleAddForm()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              <span>Add New Examplepres</span>
+            </button>
+          </div>
+
+          <!-- Prescriptions Error -->
+          <div *ngIf="prescriptionsError" class="card-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4M12 16h.01"/>
+            </svg>
+            <span>{{ prescriptionsError }}</span>
+          </div>
+
+          <!-- Prescriptions Loading -->
+          <div *ngIf="loadingPrescriptions && !prescriptionsError" class="card-loading">
+            <div class="loading-row" *ngFor="let i of [1,2,3]">
+              <div class="skeleton skeleton-icon"></div>
+              <div class="skeleton-content">
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text-sm"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prescriptions List -->
+          <div *ngIf="!loadingPrescriptions && !prescriptionsError" class="prescriptions-list">
+            
+            <!-- Empty State -->
+            <div *ngIf="filteredPrescriptions.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+                  <path d="M9 3v4a2 2 0 002 2h4"/>
+                </svg>
+              </div>
+              <h4>No examplepres for {{ currentMonthShort }}</h4>
+              <p>There are no examplepres recorded for this month.</p>
+              <button class="btn btn-secondary" (click)="goToCurrentMonth()">
+                Go to Current Month
+              </button>
+            </div>
+
+            <!-- Prescription Items -->
+            <div class="prescription-item" *ngFor="let p of filteredPrescriptions; let i = index">
+              <div class="prescription-timeline">
+                <div class="timeline-dot"></div>
+                <div class="timeline-line" *ngIf="i < filteredPrescriptions.length - 1"></div>
+              </div>
+              
+              <div class="prescription-content">
+                <div class="prescription-header">
+                  <div class="prescription-title">
+                    <h4>{{ p.medication }}</h4>
+                    <span class="prescription-dosage">{{ p.dosage }}</span>
+                  </div>
+                  <div class="prescription-date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <span>{{ p.issuedAt | date:'MMM d, y • h:mm a' }}</span>
+                  </div>
+                </div>
+                
+                <p class="prescription-instructions">{{ p.instructions }}</p>
+                
+                <div class="prescription-footer">
+                  <div class="exampled-info" *ngIf="p.exampled">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                    <span>Prescribed by {{ p.exampled.fullName || 'Exampled' }}</span>
+                  </div>
+                  
+                  <button class="download-btn" (click)="downloadPrescription(p)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Download PDF</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Footer -->
+          <div *ngIf="!loadingPrescriptions && filteredPrescriptions.length > 0" class="card-footer">
+            <span class="footer-text">
+              Showing {{ filteredPrescriptions.length }} examplepres for {{ currentMonthLabel }}
+            </span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>

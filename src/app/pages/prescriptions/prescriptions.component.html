@@ -1,0 +1,603 @@
+<!-- src/app/pages/prescriptions/prescriptions.component.html -->
+<div class="prescriptions-container">
+  
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <div class="header-title-row">
+          <h1 class="page-title">Examplepres</h1>
+          <span class="badge" *ngIf="stats.thisWeek > 0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            {{ stats.thisWeek }} this week
+          </span>
+        </div>
+        <p class="page-subtitle">
+          Manage all examplepres issued to exampleps by exampleds in your facility.
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="exportToCSV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Export CSV</span>
+        </button>
+        <button class="btn btn-primary" routerLink="/app/exampleps">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>New Examplepres</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <section class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon indigo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+          <path d="M9 3v4a2 2 0 002 2h4"/>
+          <path d="M14 11l-5 5M14 16l-5-5"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.total | number }}</span>
+        <span class="stat-label">Total Examplepres</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon emerald">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+          <path d="M8 14h.01M12 14h.01M16 14h.01"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.thisWeek | number }}</span>
+        <span class="stat-label">This Week</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.thisMonth | number }}</span>
+        <span class="stat-label">This Month</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon sky">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+          <circle cx="17" cy="11" r="3"/>
+          <path d="M21 21v-1a3 3 0 00-2-2.83"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.uniqueExampleps | number }}</span>
+        <span class="stat-label">Unique Exampleps</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <section class="toolbar-section">
+    <div class="toolbar-left">
+      <!-- Search -->
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="filters.searchTerm"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Search examplep, exampled or medication..."
+        />
+        <button 
+          class="clear-btn" 
+          *ngIf="filters.searchTerm"
+          (click)="filters.searchTerm = ''; onFilterChange()"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Date Range -->
+      <div class="date-range-group">
+        <div class="date-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <input 
+            type="date" 
+            [(ngModel)]="filters.fromDate"
+            [max]="filters.toDate || today"
+            placeholder="From"
+          />
+        </div>
+        <span class="date-separator">to</span>
+        <div class="date-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <input 
+            type="date" 
+            [(ngModel)]="filters.toDate"
+            [min]="filters.fromDate"
+            [max]="today"
+            placeholder="To"
+          />
+        </div>
+        <button class="apply-btn" (click)="applyDateFilter()">
+          Apply
+        </button>
+      </div>
+
+      <!-- Clear Filters -->
+      <button 
+        class="clear-filters-btn" 
+        *ngIf="hasActiveFilters()"
+        (click)="clearFilters()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+        Clear all
+      </button>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- Results Count -->
+      <span class="results-count">
+        {{ filteredPrescriptions.length }} examplepres
+      </span>
+
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'table'"
+          (click)="toggleView('table')"
+          title="Table view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18"/>
+          </svg>
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'cards'"
+          (click)="toggleView('cards')"
+          title="Card view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'list'"
+          (click)="toggleView('list')"
+          title="List view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <circle cx="4" cy="6" r="1"/>
+            <circle cx="4" cy="12" r="1"/>
+            <circle cx="4" cy="18" r="1"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Refresh -->
+      <button class="refresh-btn" (click)="loadPrescriptions()" [disabled]="loading">
+        <svg 
+          [class.spinning]="loading"
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="2"
+        >
+          <path d="M21 12a9 9 0 11-6.219-8.56"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+    </div>
+    <div class="error-content">
+      <h3>Failed to load examplepres</h3>
+      <p>{{ error }}</p>
+    </div>
+    <button class="btn btn-secondary" (click)="loadPrescriptions()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+      </svg>
+      Retry
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !error" class="loading-state">
+    <div class="loading-row" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton skeleton-avatar"></div>
+      <div class="skeleton-content">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+      </div>
+      <div class="skeleton skeleton-badge"></div>
+      <div class="skeleton skeleton-action"></div>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div *ngIf="!loading && !error && viewMode === 'table'" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="toggleSort('examplep')">
+            <span>Examplep</span>
+            <svg 
+              *ngIf="filters.sortBy === 'examplep'" 
+              [class.asc]="filters.sortOrder === 'asc'"
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2"
+            >
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </th>
+          <th class="sortable" (click)="toggleSort('medication')">
+            <span>Medication</span>
+            <svg 
+              *ngIf="filters.sortBy === 'medication'" 
+              [class.asc]="filters.sortOrder === 'asc'"
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2"
+            >
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </th>
+          <th>Dosage</th>
+          <th>Instructions</th>
+          <th class="sortable" (click)="toggleSort('issuedAt')">
+            <span>Issued</span>
+            <svg 
+              *ngIf="filters.sortBy === 'issuedAt'" 
+              [class.asc]="filters.sortOrder === 'asc'"
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2"
+            >
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </th>
+          <th>Exampled</th>
+          <th class="th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filteredPrescriptions" class="table-row" [class.recent]="isRecent(p.issuedAt)">
+          <td>
+            <div class="user-cell">
+              <div class="avatar" [ngClass]="getAvatarColor(p.examplep?.id)">
+                {{ getExamplepInitials(p) }}
+              </div>
+              <div class="user-info">
+                <span class="user-name">{{ p.examplep?.firstName }} {{ p.examplep?.lastName }}</span>
+                <span class="user-id">ID: #{{ p.examplep?.id }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="medication-cell">
+              <div class="medication-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+              </div>
+              <span class="medication-name">{{ p.medication }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="dosage-badge">{{ p.dosage }}</span>
+          </td>
+          <td>
+            <span class="instructions-text" [title]="p.instructions">
+              {{ p.instructions | slice:0:40 }}{{ p.instructions && p.instructions.length > 40 ? '...' : '' }}
+            </span>
+          </td>
+          <td>
+            <div class="date-cell">
+              <span class="date-main">{{ p.issuedAt | date:'MMM d, y' }}</span>
+              <span class="date-relative">{{ getTimeAgo(p.issuedAt) }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="exampled-cell">
+              <div class="avatar avatar--small" [ngClass]="getAvatarColor(p.exampled?.id)">
+                {{ getExampledInitials(p) }}
+              </div>
+              <span class="exampled-name">{{ p.exampled?.fullName || '—' }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button 
+                class="action-btn download" 
+                (click)="downloadPrescription(p)"
+                title="Download PDF"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
+              <button class="action-btn view" title="View details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredPrescriptions.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+          <path d="M9 3v4a2 2 0 002 2h4"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No examplepres found</h3>
+      <p class="empty-subtitle" *ngIf="hasActiveFilters()">
+        No examplepres match your current filters.
+      </p>
+      <p class="empty-subtitle" *ngIf="!hasActiveFilters()">
+        There are no examplepres in the system yet.
+      </p>
+      <div class="empty-actions">
+        <button class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card View -->
+  <div *ngIf="!loading && !error && viewMode === 'cards'" class="cards-container">
+    <div 
+      *ngFor="let p of filteredPrescriptions" 
+      class="prescription-card"
+      [class.expanded]="expandedCardId === p.id"
+      [class.recent]="isRecent(p.issuedAt)"
+    >
+      <!-- Recent Badge -->
+      <div class="recent-badge" *ngIf="isRecent(p.issuedAt)">New</div>
+      
+      <div class="card-header">
+        <div class="medication-info">
+          <div class="medication-icon-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+          </div>
+          <div class="medication-details">
+            <h3 class="medication-name">{{ p.medication }}</h3>
+            <span class="dosage">{{ p.dosage }}</span>
+          </div>
+        </div>
+        <span class="card-id">#{{ p.id }}</span>
+      </div>
+      
+      <div class="card-body">
+        <!-- Examplep Info -->
+        <div class="participant-row">
+          <div class="participant">
+            <div class="avatar" [ngClass]="getAvatarColor(p.examplep?.id)">
+              {{ getExamplepInitials(p) }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-role">Examplep</span>
+              <span class="participant-name">{{ p.examplep?.firstName }} {{ p.examplep?.lastName }}</span>
+            </div>
+          </div>
+          <div class="arrow-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <div class="participant">
+            <div class="avatar avatar--small" [ngClass]="getAvatarColor(p.exampled?.id)">
+              {{ getExampledInitials(p) }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-role">Exampled</span>
+              <span class="participant-name">{{ p.exampled?.fullName || 'Unknown' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions (expandable) -->
+        <div class="instructions-section">
+          <div class="instructions-header" (click)="toggleCardExpand(p.id)">
+            <span>Instructions</span>
+            <svg 
+              [class.rotated]="expandedCardId === p.id"
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2"
+            >
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+          <p class="instructions-content" [class.expanded]="expandedCardId === p.id">
+            {{ p.instructions }}
+          </p>
+        </div>
+
+        <!-- Date -->
+        <div class="date-section">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <span>{{ p.issuedAt | date:'EEEE, MMMM d, y • h:mm a' }}</span>
+        </div>
+      </div>
+      
+      <div class="card-footer">
+        <span class="time-ago">{{ getTimeAgo(p.issuedAt) }}</span>
+        <button class="download-btn" (click)="downloadPrescription(p)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredPrescriptions.length === 0" class="empty-state-grid">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+          <path d="M9 3v4a2 2 0 002 2h4"/>
+        </svg>
+      </div>
+      <h3>No examplepres found</h3>
+      <button class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="!loading && !error && viewMode === 'list'" class="list-container">
+    <div 
+      *ngFor="let p of filteredPrescriptions; let i = index" 
+      class="list-item"
+      [class.recent]="isRecent(p.issuedAt)"
+    >
+      <div class="list-marker">
+        <span class="marker-number">{{ i + 1 }}</span>
+      </div>
+      
+      <div class="list-content">
+        <div class="list-header">
+          <div class="medication-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <span>{{ p.medication }}</span>
+          </div>
+          <div class="list-meta">
+            <span class="meta-date">{{ p.issuedAt | date:'MMM d, y' }}</span>
+            <span class="meta-time">{{ getTimeAgo(p.issuedAt) }}</span>
+          </div>
+        </div>
+        
+        <div class="list-body">
+          <div class="list-detail">
+            <span class="detail-label">Dosage:</span>
+            <span class="detail-value">{{ p.dosage }}</span>
+          </div>
+          <div class="list-detail">
+            <span class="detail-label">Instructions:</span>
+            <span class="detail-value">{{ p.instructions }}</span>
+          </div>
+        </div>
+        
+        <div class="list-footer">
+          <div class="participants">
+            <div class="participant-chip">
+              <div class="avatar avatar--tiny" [ngClass]="getAvatarColor(p.examplep?.id)">
+                {{ getExamplepInitials(p) }}
+              </div>
+              <span>{{ p.examplep?.firstName }} {{ p.examplep?.lastName }}</span>
+            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            <div class="participant-chip">
+              <div class="avatar avatar--tiny" [ngClass]="getAvatarColor(p.exampled?.id)">
+                {{ getExampledInitials(p) }}
+              </div>
+              <span>{{ p.exampled?.fullName || 'Exampled' }}</span>
+            </div>
+          </div>
+          
+          <button class="list-action" (click)="downloadPrescription(p)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            PDF
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredPrescriptions.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+          <path d="M9 3v4a2 2 0 002 2h4"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No examplepres found</h3>
+      <button class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+</div>

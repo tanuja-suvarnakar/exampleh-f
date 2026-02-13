@@ -1,0 +1,421 @@
+<!-- src/app/features/exampleps/examplep-list.component.html -->
+<div class="examplep-list-container">
+  
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <div class="header-title-row">
+          <h1 class="page-title">Exampleps</h1>
+          <span class="total-badge" *ngIf="stats.total > 0">
+            {{ stats.total }} total
+          </span>
+        </div>
+        <p class="page-subtitle">
+          Manage and view all registered exampleps in your exampleh system.
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="createNew()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>Add Examplep</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <section class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon indigo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+          <circle cx="17" cy="7" r="3"/>
+          <path d="M21 21v-2a3 3 0 00-2-2.83"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.total | number }}</span>
+        <span class="stat-label">Total Exampleps</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon emerald">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          <path d="M16 4l2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.newThisMonth | number }}</span>
+        <span class="stat-label">New This Month</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.activeToday | number }}</span>
+        <span class="stat-label">Active Today</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <section class="toolbar-section">
+    <div class="toolbar-left">
+      <!-- Search Box -->
+      <div class="search-box" [class.has-value]="searchTerm">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="searchChanged()"
+          placeholder="Search by name..."
+        />
+        <button 
+          class="clear-btn" 
+          *ngIf="searchTerm"
+          (click)="clearSearch()"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Results info -->
+      <div class="results-info" *ngIf="!loading && pageData">
+        <span *ngIf="searchTerm">
+          Found <strong>{{ pageData.totalElements }}</strong> results for "{{ searchTerm }}"
+        </span>
+        <span *ngIf="!searchTerm">
+          Showing <strong>{{ showingFrom }}-{{ showingTo }}</strong> of <strong>{{ pageData.totalElements }}</strong>
+        </span>
+      </div>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'table'"
+          (click)="toggleView('table')"
+          title="Table view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18"/>
+          </svg>
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'grid'"
+          (click)="toggleView('grid')"
+          title="Grid view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Page Size -->
+      <div class="page-size-select">
+        <select [(ngModel)]="pageSize" (ngModelChange)="searchChanged()">
+          <option [value]="5">5 per page</option>
+          <option [value]="10">10 per page</option>
+          <option [value]="25">25 per page</option>
+          <option [value]="50">50 per page</option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+    </div>
+    <div class="error-content">
+      <h3>Failed to load exampleps</h3>
+      <p>{{ error }}</p>
+    </div>
+    <button class="error-retry" (click)="load()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+      </svg>
+      Try Again
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !error" class="loading-state">
+    <div class="loading-card" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton skeleton-avatar"></div>
+      <div class="skeleton-content">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+      </div>
+      <div class="skeleton skeleton-action"></div>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div *ngIf="!loading && !error && viewMode === 'table'" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="th-examplep">
+            <span>Examplep</span>
+          </th>
+          <th class="th-dob">
+            <span>Date of Birth</span>
+          </th>
+          <th class="th-age">
+            <span>Age</span>
+          </th>
+          <th class="th-contact">
+            <span>Contact</span>
+          </th>
+          <th class="th-actions">
+            <span>Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          *ngFor="let examplep of exampleps; let i = index" 
+          class="table-row"
+          [class.even]="i % 2 === 0"
+        >
+          <td class="td-examplep">
+            <div class="examplep-cell">
+              <div class="avatar" [ngClass]="getAvatarColor(examplep)">
+                {{ getInitials(examplep) }}
+              </div>
+              <div class="examplep-info">
+                <span class="examplep-name">{{ examplep.firstName }} {{ examplep.lastName }}</span>
+               
+              </div>
+            </div>
+          </td>
+          <td class="td-dob">
+            <div class="date-cell">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <path d="M16 2v4M8 2v4M3 10h18"/>
+              </svg>
+              <span>{{ examplep.dateOfBirth | date:'mediumDate' }}</span>
+            </div>
+          </td>
+          <td class="td-age">
+            <span class="age-badge">
+              {{ getAge(examplep.dateOfBirth) }} years
+            </span>
+          </td>
+          <td class="td-contact">
+            <div class="contact-cell">
+              <span class="contact-email" *ngIf="examplep.email">{{ examplep.email }}</span>
+              <span class="contact-phone" *ngIf="examplep.phone">{{ examplep.phone }}</span>
+              <span class="no-contact" *ngIf="!examplep.email && !examplep.phone">—</span>
+            </div>
+          </td>
+          <td class="td-actions">
+            <div class="action-buttons">
+              <button class="action-btn view" (click)="openDetail(examplep.id!)" title="View profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>View</span>
+              </button>
+              <button class="action-btn edit" [routerLink]="['/app/exampleps', examplep.id, 'edit']" title="Edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Empty State -->
+    <div *ngIf="exampleps.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No exampleps found</h3>
+      <p class="empty-subtitle" *ngIf="searchTerm">
+        No exampleps match "{{ searchTerm }}". Try a different search term.
+      </p>
+      <p class="empty-subtitle" *ngIf="!searchTerm">
+        Get started by adding your first examplep to the system.
+      </p>
+      <div class="empty-actions">
+        <button class="btn btn-secondary" *ngIf="searchTerm" (click)="clearSearch()">
+          Clear Search
+        </button>
+        <button class="btn btn-primary" (click)="createNew()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Add Examplep
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid View -->
+  <div *ngIf="!loading && !error && viewMode === 'grid'" class="grid-container">
+    <div 
+      *ngFor="let examplep of exampleps" 
+      class="examplep-card"
+      (click)="openDetail(examplep.id!)"
+    >
+      <div class="card-header">
+        <div class="avatar large" [ngClass]="getAvatarColor(examplep)">
+          {{ getInitials(examplep) }}
+        </div>
+        <span class="card-id">#{{ examplep.id }}</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-name">{{ examplep.firstName }} {{ examplep.lastName }}</h3>
+        <div class="card-details">
+          <div class="detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            <span>{{ examplep.dateOfBirth | date:'mediumDate' }}</span>
+          </div>
+          <div class="detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <span>{{ getAge(examplep.dateOfBirth) }} years old</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="card-btn">
+          View Profile
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Empty State Grid -->
+    <div *ngIf="exampleps.length === 0" class="empty-state-grid">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <h3>No exampleps found</h3>
+      <button class="btn btn-primary" (click)="createNew()">Add Examplep</button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && !error && pageData && pageData.totalPages > 1" class="pagination-section">
+    <div class="pagination-info">
+      Showing {{ showingFrom }} to {{ showingTo }} of {{ pageData.totalElements }} exampleps
+    </div>
+    
+    <div class="pagination-controls">
+      <!-- First Page -->
+      <button 
+        class="page-btn"
+        [disabled]="pageData.number === 0"
+        (click)="goToPage(0)"
+        title="First page"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+        </svg>
+      </button>
+      
+      <!-- Previous -->
+      <button 
+        class="page-btn"
+        [disabled]="pageData.number === 0"
+        (click)="goToPage(pageData.number - 1)"
+        title="Previous page"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      
+      <!-- Page Numbers -->
+      <div class="page-numbers">
+        <button
+          *ngFor="let page of getPageNumbers()"
+          class="page-number"
+          [class.active]="page === pageData.number"
+          (click)="goToPage(page)"
+        >
+          {{ page + 1 }}
+        </button>
+      </div>
+      
+      <!-- Next -->
+      <button 
+        class="page-btn"
+        [disabled]="pageData.number + 1 >= pageData.totalPages"
+        (click)="goToPage(pageData.number + 1)"
+        title="Next page"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+      
+      <!-- Last Page -->
+      <button 
+        class="page-btn"
+        [disabled]="pageData.number + 1 >= pageData.totalPages"
+        (click)="goToPage(pageData.totalPages - 1)"
+        title="Last page"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

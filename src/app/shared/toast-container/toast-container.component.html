@@ -1,0 +1,23 @@
+<div class="fixed top-4 right-4 space-y-2 z-50">
+  <div
+    *ngFor="let m of toast.messages; let i = index"
+    class="px-4 py-2 rounded-md shadow text-sm flex items-start gap-2"
+    [ngClass]="{
+      'bg-emerald-50 text-emerald-800 border border-emerald-200': m.type === 'success',
+      'bg-rose-50 text-rose-800 border border-rose-200': m.type === 'error'
+    }"
+  >
+    <span class="mt-0.5 text-xs">
+      {{ m.type === 'success' ? '✓' : '!' }}
+    </span>
+    <div class="flex-1">
+      {{ m.text }}
+    </div>
+    <button
+      (click)="toast.dismiss(i)"
+      class="ml-2 text-xs text-slate-500 hover:text-slate-700"
+    >
+      ✕
+    </button>
+  </div>
+</div>

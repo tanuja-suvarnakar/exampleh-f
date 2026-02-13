@@ -1,0 +1,662 @@
+<!-- src/app/pages/visits/visits.component.html -->
+<div class="visits-container">
+  
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <div class="header-title-row">
+          <h1 class="page-title">Visits</h1>
+          <span class="live-badge" *ngIf="stats.todayCount > 0">
+            <span class="pulse"></span>
+            {{ stats.todayCount }} today
+          </span>
+        </div>
+        <p class="page-subtitle">
+          Manage and track all appointments between exampleps and exampleds.
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>Schedule Visit</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <section class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.total | number }}</span>
+        <span class="stat-label">Total Visits</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon scheduled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.scheduled | number }}</span>
+        <span class="stat-label">Scheduled</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon completed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.completed | number }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon cancelled">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M15 9l-6 6M9 9l6 6"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats.cancelled | number }}</span>
+        <span class="stat-label">Cancelled</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <section class="toolbar-section">
+    <div class="toolbar-left">
+      <!-- Search -->
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="filters.searchTerm"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Search exampleps or exampleds..."
+        />
+        <button class="clear-btn" *ngIf="filters.searchTerm" (click)="filters.searchTerm = ''; onFilterChange()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-select">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <select [(ngModel)]="filters.status" (ngModelChange)="onFilterChange()">
+          <option value="all">All Status</option>
+          <option value="SCHEDULED">Scheduled</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-select">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+        <select [(ngModel)]="filters.dateRange" (ngModelChange)="onFilterChange()">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="upcoming">Upcoming</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters -->
+      <button 
+        class="clear-filters-btn" 
+        *ngIf="hasActiveFilters()"
+        (click)="clearFilters()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+        Clear filters
+      </button>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- Results Count -->
+      <span class="results-count">
+        {{ filteredVisits.length }} visits
+      </span>
+
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'table'"
+          (click)="toggleView('table')"
+          title="Table view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18"/>
+          </svg>
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'cards'"
+          (click)="toggleView('cards')"
+          title="Card view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="viewMode === 'timeline'"
+          (click)="toggleView('timeline')"
+          title="Timeline view"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="4" r="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="12" cy="20" r="2"/>
+            <path d="M12 6v4M12 14v4"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Refresh Button -->
+      <button class="refresh-btn" (click)="load()" [disabled]="loading">
+        <svg 
+          [class.spinning]="loading" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="2"
+        >
+          <path d="M21 12a9 9 0 11-6.219-8.56"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+    </div>
+    <div class="error-content">
+      <h3>Failed to load visits</h3>
+      <p>{{ error }}</p>
+    </div>
+    <button class="btn btn-secondary" (click)="load()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+      </svg>
+      Retry
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !error" class="loading-state">
+    <div class="loading-row" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton skeleton-avatar"></div>
+      <div class="skeleton-content">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+      </div>
+      <div class="skeleton skeleton-badge"></div>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div *ngIf="!loading && !error && viewMode === 'table'" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Examplep</th>
+          <th>Exampled</th>
+          <th>Scheduled Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th class="th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let visit of filteredVisits" class="table-row">
+          <td>
+            <div class="user-cell">
+              <div class="avatar" [ngClass]="getAvatarColor(visit.examplep?.id)">
+                {{ getExamplepInitials(visit) }}
+              </div>
+              <div class="user-info">
+                <span class="user-name">{{ visit.examplep?.firstName }} {{ visit.examplep?.lastName }}</span>
+           
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="user-cell">
+              <div class="avatar avatar--small" [ngClass]="getAvatarColor(visit.exampled?.id)">
+                {{ getExampledInitials(visit) }}
+              </div>
+              <span class="user-name">{{ visit.exampled?.fullName || '—' }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="date-cell">
+              <span class="date-main">{{ visit.scheduledAt | date:'mediumDate' }}</span>
+              <span class="date-relative" *ngIf="getRelativeTime(visit.scheduledAt)">
+                {{ getRelativeTime(visit.scheduledAt) }}
+              </span>
+            </div>
+          </td>
+          <td>
+            <span class="time-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              {{ visit.scheduledAt | date:'shortTime' }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(visit.status)">
+              <span class="status-dot"></span>
+              {{ getStatusLabel(visit.status) }}
+            </span>
+          </td>
+          <td>
+            <span class="notes-preview" [title]="visit.notes">
+              {{ visit.notes ? (visit.notes | slice:0:30) + (visit.notes.length > 30 ? '...' : '') : '—' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn view" title="View details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredVisits.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No visits found</h3>
+      <p class="empty-subtitle" *ngIf="hasActiveFilters()">
+        No visits match your current filters. Try adjusting them.
+      </p>
+      <p class="empty-subtitle" *ngIf="!hasActiveFilters()">
+        Schedule your first visit to get started.
+      </p>
+      <div class="empty-actions">
+        <button class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+          Clear Filters
+        </button>
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Schedule Visit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card View -->
+  <div *ngIf="!loading && !error && viewMode === 'cards'" class="cards-container">
+    <div *ngFor="let visit of filteredVisits" class="visit-card" [class.today]="isToday(visit.scheduledAt)">
+      <!-- Today Badge -->
+      <div class="today-ribbon" *ngIf="isToday(visit.scheduledAt)">Today</div>
+      
+      <div class="card-header">
+        <span class="status-badge" [ngClass]="getStatusClass(visit.status)">
+          <span class="status-dot"></span>
+          {{ getStatusLabel(visit.status) }}
+        </span>
+        <span class="card-id">#{{ visit.id }}</span>
+      </div>
+      
+      <div class="card-body">
+        <!-- Examplep Info -->
+        <div class="participant-section">
+          <div class="participant">
+            <div class="avatar" [ngClass]="getAvatarColor(visit.examplep?.id)">
+              {{ getExamplepInitials(visit) }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-role">Examplep</span>
+              <span class="participant-name">{{ visit.examplep?.firstName }} {{ visit.examplep?.lastName }}</span>
+            </div>
+          </div>
+          
+          <div class="connection-line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          
+          <div class="participant">
+            <div class="avatar avatar--small" [ngClass]="getAvatarColor(visit.exampled?.id)">
+              {{ getExampledInitials(visit) }}
+            </div>
+            <div class="participant-info">
+              <span class="participant-role">Exampled</span>
+              <span class="participant-name">{{ visit.exampled?.fullName || 'Unassigned' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Date & Time -->
+        <div class="datetime-section">
+          <div class="datetime-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            <span>{{ visit.scheduledAt | date:'EEEE, MMMM d, y' }}</span>
+          </div>
+          <div class="datetime-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <span>{{ visit.scheduledAt | date:'h:mm a' }}</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="notes-section" *ngIf="visit.notes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8"/>
+          </svg>
+          <span>{{ visit.notes | slice:0:80 }}{{ visit.notes.length > 80 ? '...' : '' }}</span>
+        </div>
+      </div>
+      
+      <div class="card-footer">
+        <span class="relative-time" *ngIf="getRelativeTime(visit.scheduledAt)">
+          {{ getRelativeTime(visit.scheduledAt) }}
+        </span>
+        <div class="card-actions">
+          <button class="card-btn">
+            View Details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredVisits.length === 0" class="empty-state-grid">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+      </div>
+      <h3>No visits found</h3>
+      <button class="btn btn-primary" (click)="openCreateModal()">Schedule Visit</button>
+    </div>
+  </div>
+
+  <!-- Timeline View -->
+  <div *ngIf="!loading && !error && viewMode === 'timeline'" class="timeline-container">
+    <div class="timeline">
+      <div *ngFor="let visit of filteredVisits; let i = index" class="timeline-item">
+        <div class="timeline-marker">
+          <div class="marker-dot" [ngClass]="getStatusClass(visit.status)"></div>
+          <div class="marker-line" *ngIf="i < filteredVisits.length - 1"></div>
+        </div>
+        
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div class="timeline-date">
+              <span class="date-day">{{ visit.scheduledAt | date:'d' }}</span>
+              <span class="date-month">{{ visit.scheduledAt | date:'MMM' }}</span>
+            </div>
+            <div class="timeline-time">
+              {{ visit.scheduledAt | date:'h:mm a' }}
+            </div>
+            <span class="status-badge small" [ngClass]="getStatusClass(visit.status)">
+              {{ getStatusLabel(visit.status) }}
+            </span>
+          </div>
+          
+          <div class="timeline-body">
+            <div class="timeline-participants">
+              <div class="avatar" [ngClass]="getAvatarColor(visit.examplep?.id)">
+                {{ getExamplepInitials(visit) }}
+              </div>
+              <div class="participant-details">
+                <span class="name">{{ visit.examplep?.firstName }} {{ visit.examplep?.lastName }}</span>
+                <span class="role">with {{ visit.exampled?.fullName || 'Exampled' }}</span>
+              </div>
+            </div>
+            <p class="timeline-notes" *ngIf="visit.notes">{{ visit.notes }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredVisits.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No visits found</h3>
+      <button class="btn btn-primary" (click)="openCreateModal()">Schedule Visit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+            <path d="M12 14v4M10 16h4"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Schedule New Visit</h2>
+          <p>Create a new appointment between examplep and exampled</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeCreateModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="createSuccess" class="modal-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h3>Visit Scheduled!</h3>
+      <p>The appointment has been created successfully.</p>
+    </div>
+
+    <div class="modal-body" *ngIf="!createSuccess">
+      <!-- Error Message -->
+      <div *ngIf="createError" class="form-error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <span>{{ createError }}</span>
+      </div>
+
+      <!-- Form -->
+      <div class="form-grid">
+        <!-- Examplep Select -->
+        <div class="form-group full-width">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+            </svg>
+            Select Examplep
+          </label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="selectedExamplepId" [disabled]="loadingExampleps">
+              <option [ngValue]="null">Choose an examplep...</option>
+              <option *ngFor="let e of exampleps" [ngValue]="e.id">
+                {{ e.firstName }} {{ e.lastName }}
+              </option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+          
+          <!-- Selected Examplep Preview -->
+          <div class="selected-preview" *ngIf="getSelectedExamplep()">
+            <div class="avatar" [ngClass]="getAvatarColor(selectedExamplepId || 0)">
+              {{ (getSelectedExamplep()?.firstName?.[0] || '') + (getSelectedExamplep()?.lastName?.[0] || '') | uppercase }}
+            </div>
+            <div class="preview-info">
+              <span class="preview-name">{{ getSelectedExamplep()?.firstName }} {{ getSelectedExamplep()?.lastName }}</span>
+              <span class="preview-dob" *ngIf="getSelectedExamplep()?.dateOfBirth">
+                DOB: {{ getSelectedExamplep()?.dateOfBirth | date:'mediumDate' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="form-group">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            Date & Time
+          </label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="scheduledAt"
+            [min]="today"
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4M12 16h.01"/>
+            </svg>
+            Status
+          </label>
+          <div class="status-options">
+            <label 
+              *ngFor="let option of statusOptions" 
+              class="status-option"
+              [class.selected]="status === option.value"
+            >
+              <input 
+                type="radio" 
+                [value]="option.value" 
+                [(ngModel)]="status"
+              />
+              <span class="option-indicator" [ngClass]="'status--' + option.value.toLowerCase()"></span>
+              <span class="option-label">{{ option.label }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group full-width">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <path d="M14 2v6h6M16 13H8M16 17H8"/>
+            </svg>
+            Notes (Optional)
+          </label>
+          <textarea 
+            [(ngModel)]="notes" 
+            rows="3"
+            placeholder="Add any additional notes or instructions..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" *ngIf="!createSuccess">
+      <button class="btn btn-secondary" (click)="closeCreateModal()" [disabled]="saving">
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="saveVisit()" [disabled]="saving">
+        <svg *ngIf="saving" class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 11-6.219-8.56"/>
+        </svg>
+        <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01"/>
+        </svg>
+        <span>{{ saving ? 'Scheduling...' : 'Schedule Visit' }}</span>
+      </button>
+    </div>
+  </div>
+</div>

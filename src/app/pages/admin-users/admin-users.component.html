@@ -1,0 +1,595 @@
+<!-- src/app/pages/admin-users/admin-users.component.html -->
+<div class="admin-users-container">
+  
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <div class="header-title-row">
+          <div class="admin-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Admin
+          </div>
+          <h1 class="page-title">User Management</h1>
+        </div>
+        <p class="page-subtitle">
+          Create and manage user accounts for exampleds, assistants, and administrators.
+        </p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openCreateModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <path d="M20 8v6M23 11h-6"/>
+          </svg>
+          <span>Create User</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Error Banner -->
+  <div *ngIf="error" class="error-banner">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <path d="M12 9v4M12 17h.01"/>
+      </svg>
+    </div>
+    <div class="error-content">
+      <h3>Access Restricted</h3>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!error">
+    <!-- Stats Cards -->
+    <section class="stats-section">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.total | number }}</span>
+          <span class="stat-label">Total Users</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon exampled">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+            <path d="M12 11v3M10.5 12.5h3"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.exampleds | number }}</span>
+          <span class="stat-label">Exampleds</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon assistant">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.assistants | number }}</span>
+          <span class="stat-label">Assistants</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon admin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ stats.admins | number }}</span>
+          <span class="stat-label">Administrators</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar -->
+    <section class="toolbar-section">
+      <div class="toolbar-left">
+        <!-- Search -->
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+       <input
+  type="text"
+  [(ngModel)]="filters.searchTerm"
+  placeholder="Search by name or email..."
+/>
+          <button 
+            class="clear-btn" 
+            *ngIf="filters.searchTerm"
+            (click)="filters.searchTerm = ''"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Role Filter -->
+        <div class="filter-select">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          <select [(ngModel)]="filters.role">
+            <option value="all">All Roles</option>
+            <option value="EXAMPLED">Exampleds</option>
+            <option value="ASSISTANT">Assistants</option>
+            <option value="ADMIN">Administrators</option>
+          </select>
+        </div>
+
+        <!-- Clear Filters -->
+        <button 
+          class="clear-filters-btn" 
+          *ngIf="hasActiveFilters()"
+          (click)="clearFilters()"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+      
+      <div class="toolbar-right">
+        <!-- Results Count -->
+        <span class="results-count">
+          {{ filteredUsers.length }} users
+        </span>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button 
+            class="toggle-btn" 
+            [class.active]="viewMode === 'table'"
+            (click)="toggleView('table')"
+            title="Table view"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M3 12h18M3 18h18"/>
+            </svg>
+          </button>
+          <button 
+            class="toggle-btn" 
+            [class.active]="viewMode === 'cards'"
+            (click)="toggleView('cards')"
+            title="Card view"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Refresh -->
+        <button class="refresh-btn" (click)="loadUsers()" [disabled]="loading">
+          <svg 
+            [class.spinning]="loading"
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2"
+          >
+            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-row" *ngFor="let i of [1,2,3,4]">
+        <div class="skeleton skeleton-avatar"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-subtitle"></div>
+        </div>
+        <div class="skeleton skeleton-badge"></div>
+        <div class="skeleton skeleton-actions"></div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="!loading && viewMode === 'table'" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th class="th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers" class="table-row">
+            <td>
+              <div class="user-cell">
+                <div class="avatar" [ngClass]="getAvatarColor(user.id)">
+                  {{ getUserInitials(user) }}
+                </div>
+                <div class="user-info">
+                  <span class="user-name">{{ user.fullName }}</span>
+           
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="email">{{ user.email || '—' }}</span>
+            </td>
+            <td>
+              <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+                <span class="role-icon">
+                  <svg *ngIf="user.role === 'EXAMPLED'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    <path d="M12 11v3M10.5 12.5h3"/>
+                  </svg>
+                  <svg *ngIf="user.role === 'ASSISTANT'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                  </svg>
+                  <svg *ngIf="user.role === 'ADMIN'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </span>
+                {{ getRoleLabel(user.role) }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge active">
+                <span class="status-dot"></span>
+                Active
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn edit" (click)="openEditModal(user)" title="Edit user">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="action-btn delete" (click)="deleteUser(user)" title="Delete user">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Empty State -->
+      <div *ngIf="filteredUsers.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">No users found</h3>
+        <p class="empty-subtitle" *ngIf="hasActiveFilters()">
+          No users match your current filters.
+        </p>
+        <p class="empty-subtitle" *ngIf="!hasActiveFilters()">
+          Get started by creating your first user.
+        </p>
+        <div class="empty-actions">
+          <button class="btn btn-secondary" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+            Clear Filters
+          </button>
+          <button class="btn btn-primary" (click)="openCreateModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Create User
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div *ngIf="!loading && viewMode === 'cards'" class="cards-container">
+      <div *ngFor="let user of filteredUsers" class="user-card">
+        <div class="card-header">
+          <div class="avatar large" [ngClass]="getAvatarColor(user.id)">
+            {{ getUserInitials(user) }}
+          </div>
+          <span class="status-dot active" title="Active"></span>
+        </div>
+        
+        <div class="card-body">
+          <h3 class="card-name">{{ user.fullName }}</h3>
+    <p class="card-email">{{ user.email || 'No email' }}</p>
+          
+          <div class="card-role">
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+              <span class="role-icon">
+                <svg *ngIf="user.role === 'EXAMPLED'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                  <path d="M12 11v3M10.5 12.5h3"/>
+                </svg>
+                <svg *ngIf="user.role === 'ASSISTANT'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                </svg>
+                <svg *ngIf="user.role === 'ADMIN'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </span>
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </div>
+          
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              User ID: #{{ user.id }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <button class="card-btn secondary" (click)="openEditModal(user)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+          <button class="card-btn danger" (click)="deleteUser(user)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div *ngIf="filteredUsers.length === 0" class="empty-state-grid">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <h3>No users found</h3>
+        <button class="btn btn-primary" (click)="openCreateModal()">Create User</button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Create/Edit Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <path d="M20 8v6M23 11h-6"/>
+          </svg>
+        </div>
+        <div>
+          <h2>{{ modalMode === 'create' ? 'Create New User' : 'Edit User' }}</h2>
+          <p>{{ modalMode === 'create' ? 'Add a new user to the system' : 'Update user information' }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="modalSuccess" class="modal-success">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h3>{{ modalMode === 'create' ? 'User Created!' : 'User Updated!' }}</h3>
+      <p>The user has been {{ modalMode === 'create' ? 'created' : 'updated' }} successfully.</p>
+    </div>
+
+    <div class="modal-body" *ngIf="!modalSuccess">
+      <!-- Error Message -->
+      <div *ngIf="modalError" class="form-error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <span>{{ modalError }}</span>
+      </div>
+
+      <!-- Form -->
+      <div class="form-grid">
+        <!-- Full Name -->
+        <div class="form-group full-width">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+            </svg>
+            Full Name *
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="form.fullName"
+            placeholder="e.g., Dr. John Smith"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group full-width">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            Email Address *
+          </label>
+          <input 
+            type="email" 
+            [(ngModel)]="form.email"
+            placeholder="user@example.com"
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group full-width" *ngIf="modalMode === 'create'">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            Temporary Password *
+          </label>
+          <div class="password-input-group">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              [(ngModel)]="form.password"
+              placeholder="Enter a secure password"
+            />
+            <button 
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+            >
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+            <button 
+              type="button"
+              class="generate-btn"
+              (click)="generatePassword()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+              </svg>
+              Generate
+            </button>
+          </div>
+          <p class="field-hint">
+            User should change this password on first login.
+            <button 
+              type="button" 
+              class="copy-link"
+              *ngIf="form.password"
+              (click)="copyToClipboard(form.password)"
+            >
+              Copy password
+            </button>
+          </p>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-group full-width">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            User Role *
+          </label>
+          <div class="role-options">
+            <label 
+              *ngFor="let option of roleOptions" 
+              class="role-option"
+              [class.selected]="form.role === option.value"
+            >
+              <input 
+                type="radio" 
+                [value]="option.value" 
+                [(ngModel)]="form.role"
+              />
+              <div class="option-card">
+                <div class="option-header">
+                  <div class="option-icon" [class]="option.color">
+                    <svg *ngIf="option.icon === 'doctor'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                      <path d="M12 11v3M10.5 12.5h3"/>
+                    </svg>
+                    <svg *ngIf="option.icon === 'assistant'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="8" r="4"/>
+                      <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                    </svg>
+                    <svg *ngIf="option.icon === 'admin'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    </svg>
+                  </div>
+                  <span class="option-label">{{ option.label }}</span>
+                </div>
+                <p class="option-description">{{ option.description }}</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" *ngIf="!modalSuccess">
+      <button class="btn btn-secondary" (click)="closeModal()" [disabled]="saving">
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="saveUser()" [disabled]="saving">
+        <svg *ngIf="saving" class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 11-6.219-8.56"/>
+        </svg>
+        <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span>{{ saving ? (modalMode === 'create' ? 'Creating...' : 'Updating...') : (modalMode === 'create' ? 'Create User' : 'Update User') }}</span>
+      </button>
+    </div>
+  </div>
+</div>

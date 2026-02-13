@@ -1,0 +1,534 @@
+<!-- src/app/features/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  
+  <!-- Header Section -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="greeting">{{ getGreeting() }} 👋</h1>
+        <p class="subtitle">Here's what's happening with your healthcare facility today.</p>
+      </div>
+      <div class="header-actions">
+        <div class="date-display">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <span>{{ currentTime | date:'EEEE, MMMM d, y' }}</span>
+        </div>
+        <button class="refresh-btn" (click)="loadData()" [disabled]="loading">
+          <svg 
+            class="icon" 
+            [class.spinning]="loading"
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2"
+          >
+            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+          </svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 8v4M12 16h.01"/>
+    </svg>
+    <span>{{ error }}</span>
+    <button (click)="loadData()">Try again</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !error" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading dashboard data...</span>
+  </div>
+
+  <!-- Main Dashboard Content -->
+  <div *ngIf="!loading && !error" class="dashboard-content" [class.animate]="animateStats">
+    
+    <!-- Stats Cards Grid -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div 
+          *ngFor="let stat of statCards; let i = index" 
+          class="stat-card"
+          [class]="'stat-card--' + stat.color"
+          [style.animation-delay]="(i * 100) + 'ms'"
+        >
+          <div class="stat-card__header">
+            <div class="stat-card__icon">
+              <ng-container [ngSwitch]="stat.icon">
+                <svg *ngSwitchCase="'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+                  <circle cx="17" cy="7" r="3"/>
+                  <path d="M21 21v-2a3 3 0 00-2-2.83"/>
+                </svg>
+                <svg *ngSwitchCase="'calendar'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                  <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+                </svg>
+                <svg *ngSwitchCase="'prescription'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+                  <path d="M9 3v4a2 2 0 002 2h4"/>
+                  <path d="M14 3l4 4M18 14v4M16 16h4"/>
+                </svg>
+                <svg *ngSwitchCase="'doctor'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/>
+                  <path d="M12 11v3M10.5 12.5h3"/>
+                </svg>
+              </ng-container>
+            </div>
+            <div class="stat-card__trend" [class.positive]="stat.trend >= 0" [class.negative]="stat.trend < 0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path *ngIf="stat.trend >= 0" d="M7 17l5-5 5 5"/>
+                <path *ngIf="stat.trend < 0" d="M7 7l5 5 5-5"/>
+              </svg>
+              <span>{{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%</span>
+            </div>
+          </div>
+          <div class="stat-card__body">
+            <h3 class="stat-card__value">{{ stat.value | number }}</h3>
+            <p class="stat-card__title">{{ stat.title }}</p>
+          </div>
+          <div class="stat-card__footer">
+            <span class="stat-card__subtitle">{{ stat.subtitle }}</span>
+            <span class="stat-card__trend-label">{{ stat.trendLabel }}</span>
+          </div>
+          <div class="stat-card__glow"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      
+      <!-- Visits by Status - Donut Chart -->
+      <div class="chart-card donut-chart-card">
+        <div class="chart-card__header">
+          <div>
+            <h2 class="chart-card__title">Visits by Status</h2>
+            <p class="chart-card__subtitle">Distribution of examplep-exampled visits</p>
+          </div>
+          <div class="chart-card__badge">
+            <span>{{ totalVisits }}</span> total
+          </div>
+        </div>
+        
+        <div class="chart-card__body donut-container">
+          <div class="donut-wrapper">
+            <svg class="donut-chart" viewBox="0 0 100 100">
+              <circle 
+                class="donut-ring" 
+                cx="50" cy="50" r="40"
+                fill="none" 
+                stroke="#E2E8F0" 
+                stroke-width="12"
+              />
+              <ng-container *ngFor="let segment of donutSegments">
+                <circle
+                  class="donut-segment"
+                  cx="50" cy="50" r="40"
+                  fill="none"
+                  [attr.stroke]="segment.color"
+                  stroke-width="12"
+                  stroke-linecap="round"
+                  [attr.stroke-dasharray]="(segment.value * 2.512) + ' ' + (251.2 - segment.value * 2.512)"
+                  [attr.stroke-dashoffset]="-(segment.offset * 2.512)"
+                  [style.--segment-value]="segment.value"
+                />
+              </ng-container>
+            </svg>
+            <div class="donut-center">
+              <span class="donut-center__value">{{ totalVisits }}</span>
+              <span class="donut-center__label">Visits</span>
+            </div>
+          </div>
+          
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-dot completed"></span>
+              <div class="legend-info">
+                <span class="legend-label">Completed</span>
+                <span class="legend-value">{{ visitStatusCounts.COMPLETED }}</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot scheduled"></span>
+              <div class="legend-info">
+                <span class="legend-label">Scheduled</span>
+                <span class="legend-value">{{ visitStatusCounts.SCHEDULED }}</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot cancelled"></span>
+              <div class="legend-info">
+                <span class="legend-label">Cancelled</span>
+                <span class="legend-value">{{ visitStatusCounts.CANCELLED }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Examplepres Trend - Area Chart -->
+      <div class="chart-card trend-chart-card">
+        <div class="chart-card__header">
+          <div>
+            <h2 class="chart-card__title">Examplepres Trend</h2>
+            <p class="chart-card__subtitle">Last 7 days examplepres activity</p>
+          </div>
+          <div class="chart-card__stats">
+            <div class="mini-stat">
+              <span class="mini-stat__value">{{ totalExamplepres }}</span>
+              <span class="mini-stat__label">Total</span>
+            </div>
+            <div class="mini-stat highlight">
+              <span class="mini-stat__value">{{ examplepresLast24h }}</span>
+              <span class="mini-stat__label">Last 24h</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-card__body trend-container">
+          <svg class="trend-chart" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <!-- Grid Lines -->
+            <g class="grid-lines">
+              <line x1="5" y1="25" x2="95" y2="25" />
+              <line x1="5" y1="50" x2="95" y2="50" />
+              <line x1="5" y1="75" x2="95" y2="75" />
+            </g>
+            
+            <!-- Gradient Definition -->
+            <defs>
+              <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6366F1" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#6366F1"/>
+                <stop offset="100%" stop-color="#A855F7"/>
+              </linearGradient>
+            </defs>
+            
+            <!-- Area Fill -->
+            <polygon
+              *ngIf="trendAreaPoints"
+              [attr.points]="trendAreaPoints"
+              fill="url(#areaGradient)"
+              class="trend-area"
+            />
+            
+            <!-- Line -->
+            <polyline
+              *ngIf="trendPolylinePoints"
+              [attr.points]="trendPolylinePoints"
+              fill="none"
+              stroke="url(#lineGradient)"
+              stroke-width="2"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              class="trend-line"
+            />
+            
+            <!-- Data Points -->
+            <g class="data-points">
+              <g *ngFor="let point of trendSvgPoints" class="data-point">
+                <circle
+                  [attr.cx]="point.x"
+                  [attr.cy]="point.y"
+                  r="3"
+                  fill="#6366F1"
+                  stroke="white"
+                  stroke-width="2"
+                />
+                <g class="tooltip" [attr.transform]="'translate(' + point.x + ',' + (point.y - 15) + ')'">
+                  <rect x="-15" y="-10" width="30" height="18" rx="4" fill="#1E293B"/>
+                  <text x="0" y="3" text-anchor="middle" fill="white" font-size="8">{{ point.value }}</text>
+                </g>
+              </g>
+            </g>
+          </svg>
+          
+          <!-- X-Axis Labels -->
+          <div class="trend-labels">
+            <span *ngFor="let point of trendSvgPoints">{{ point.label }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Section -->
+    <section class="activity-section">
+      
+      <!-- Recent Visits Table -->
+      <div class="activity-card">
+        <div class="activity-card__header">
+          <div class="activity-card__title-group">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            <div>
+              <h2 class="activity-card__title">Recent Visits</h2>
+              <p class="activity-card__subtitle">Latest examplep-exampled appointments</p>
+            </div>
+          </div>
+          <a routerLink="/app/visits" class="view-all-link">
+            View all
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </a>
+        </div>
+        
+        <div class="activity-card__body">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Examplep</th>
+                  <th>Exampled</th>
+                  <th>Date & Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let visit of recentVisits" class="table-row">
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar avatar--blue">
+                        {{ getInitials(visit.examplep.firstName + ' ' + visit.examplep.lastName) }}
+                      </div>
+                      <span class="user-name">{{ visit.examplep.firstName }} {{ visit.examplep.lastName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar avatar--purple">
+                        {{ getInitials(visit.exampled?.fullName || 'NA') }}
+                      </div>
+                      <span class="user-name">{{ visit.exampled?.fullName || '—' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="date-cell">
+                      <span class="date-main">{{ visit.scheduledAt | date:'MMM d, y' }}</span>
+                      <span class="date-sub">{{ visit.scheduledAt | date:'h:mm a' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getStatusClass(visit.status)">
+                      <span class="status-dot"></span>
+                      {{ visit.status | lowercase }}
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="recentVisits.length === 0">
+                  <td colspan="4" class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <path d="M3 10h18M8 2v4M16 2v4"/>
+                    </svg>
+                    <span>No visits recorded yet</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Examplepres Table -->
+      <div class="activity-card">
+        <div class="activity-card__header">
+          <div class="activity-card__title-group">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+              <path d="M9 3v4a2 2 0 002 2h4"/>
+              <path d="M14 11l-5 5M14 16l-5-5"/>
+            </svg>
+            <div>
+              <h2 class="activity-card__title">Recent Examplepres</h2>
+              <p class="activity-card__subtitle">Latest issued examplepres</p>
+            </div>
+          </div>
+          <a routerLink="/app/prescriptions" class="view-all-link">
+            View all
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </a>
+        </div>
+        
+        <div class="activity-card__body">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Examplep</th>
+                  <th>Medication</th>
+                  <th>Issued</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pres of recentExamplepres" class="table-row">
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar avatar--green">
+                        {{ getInitials(pres.examplep.firstName + ' ' + pres.examplep.lastName) }}
+                      </div>
+                      <span class="user-name">{{ pres.examplep.firstName }} {{ pres.examplep.lastName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="medication-name">{{ pres.medication }}</span>
+                  </td>
+                  <td>
+                    <span class="time-ago">{{ getTimeAgo(pres.issuedAt) }}</span>
+                  </td>
+                </tr>
+                <tr *ngIf="recentExamplepres.length === 0">
+                  <td colspan="3" class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4"/>
+                      <path d="M9 3v4a2 2 0 002 2h4"/>
+                    </svg>
+                    <span>No examplepres recorded yet</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Section -->
+    <section class="bottom-section">
+      
+      <!-- Top Exampleps Card -->
+      <div class="leaderboard-card">
+        <div class="leaderboard-card__header">
+          <div class="leaderboard-card__title-group">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <div>
+              <h2 class="leaderboard-card__title">Top Exampleps</h2>
+              <p class="leaderboard-card__subtitle">Most active by examplepres</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="leaderboard-card__body">
+          <div class="leaderboard-list">
+            <div 
+              *ngFor="let examplep of topExamplepsByExamplepres; let i = index" 
+              class="leaderboard-item"
+            >
+              <div class="leaderboard-item__rank" [class]="'rank-' + (i + 1)">
+                {{ i + 1 }}
+              </div>
+              <div class="leaderboard-item__avatar">
+                {{ examplep.avatar }}
+              </div>
+              <div class="leaderboard-item__info">
+                <span class="leaderboard-item__name">{{ examplep.examplepName }}</span>
+                <div class="leaderboard-item__progress">
+                  <div 
+                    class="progress-bar" 
+                    [style.width.%]="examplep.percentage"
+                  ></div>
+                </div>
+              </div>
+              <div class="leaderboard-item__count">
+                <span class="count-value">{{ examplep.count }}</span>
+                <span class="count-label">examplepres</span>
+              </div>
+            </div>
+            
+            <div *ngIf="topExamplepsByExamplepres.length === 0" class="leaderboard-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/>
+              </svg>
+              <span>No examplep data available</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats Summary -->
+      <div class="summary-card">
+        <div class="summary-card__header">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/>
+            <path d="M7 16l4-4 4 4 6-6"/>
+          </svg>
+          <h2 class="summary-card__title">Activity Summary</h2>
+        </div>
+        
+        <div class="summary-card__body">
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <div class="summary-stat__icon indigo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M3 21v-2a4 4 0 014-4h4"/>
+                  <circle cx="17" cy="17" r="3"/>
+                  <path d="M17 14v6M14 17h6"/>
+                </svg>
+              </div>
+              <div class="summary-stat__content">
+                <span class="summary-stat__value">{{ totalExampleps }}</span>
+                <span class="summary-stat__label">Total Exampleps</span>
+              </div>
+            </div>
+            
+            <div class="summary-stat">
+              <div class="summary-stat__icon emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+              </div>
+              <div class="summary-stat__content">
+                <span class="summary-stat__value">{{ totalVisits }}</span>
+                <span class="summary-stat__label">Total Visits</span>
+              </div>
+            </div>
+            
+            <div class="summary-stat">
+              <div class="summary-stat__icon amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                </svg>
+              </div>
+              <div class="summary-stat__content">
+                <span class="summary-stat__value">{{ totalExamplepres }}</span>
+                <span class="summary-stat__label">Total Examplepres</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="summary-message">
+            <p>
+              Monitor your healthcare facility performance and stay on top of 
+              examplep care with real-time analytics.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
